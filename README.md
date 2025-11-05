@@ -69,3 +69,69 @@ The `trigger.sql` file contains SQL snippets demonstrating the following core fu
 | **Complex Trigger Example** | `trgAnketSonucInsert` | An `AFTER INSERT` trigger for the `Kisi` table, showing complex logic and an example of the risks associated with **self-triggering** (recursive INSERT). |
 | **Random Data Selection** | `ORDER BY NEWID()` | A method for selecting a random record from the `Kisi` table. |
 | **Transaction Examples** | `SAVE TRANSACTION`, `ROLLBACK TRANSACTION`, `@@TRANCOUNT` | Applications of reverting to a specific point within a transaction, checking the transaction count, and canceling a started transaction's changes. |
+
+
+
+
+
+### 1. Tetikleyici Tanımlamaları (Trigger Definitions)
+Bu blok, farklı tablolar için denetim (audit) ve loglama amacıyla kullanılan çeşitli `AFTER/FOR` Tetikleyicilerini içerir.
+
+| Tetikleyici Adı | Tablo | Olay | Amaç |
+| :--- | :--- | :--- | :--- |
+| `trgAnektSonuc` | `Secim` | `INSERT` | Denetim amaçlı veri yakalama (Ancak kodda `Employee_Test_Audit` tablosuna INSERT yapılıyor). |
+| `dbo.trgEmployeeUpdate` | `Employee` | `UPDATE` | `EmpLog` tablosuna güncelleme kaydı ekler. |
+| `dbo.trgEmployeeInsert` | `Employee` | `INSERT` | `EmpLog` tablosuna ekleme kaydı ekler. |
+| `trgAnketSonuc` | `Kisi` | `INSERT` | `AnketLog` tablosuna ekleme kaydı ekler. |
+
+```sql
+-- trgAnektSonuc (Secim Tablosu - INSERT Audit)
+CREATE TRIGGER trgAnektSonuc ON Secim
+FOR INSERT
+AS
+    declare @RecID int;
+    declare @empname varchar(100);
+    declare @empsal decimal(10,2);
+    declare @audit_action varchar(100);
+    -- Burada @empid, @empname vb. değişkenlere atama yapılır.
+    -- Ancak kodda Emp_ID, Emp_Name, Emp_Sal Select ediliyor.
+    -- Secim tablosu yerine Employee tablosu sütunları kullanılmış gibi duruyor.
+    select @empid=i.Emp_ID from inserted i; 
+    select @empname=i.Emp_Name from inserted i;
+    select @empsal=i.Emp_Sal from inserted i;
+    set @audit_action='Inserted ';
+
+    insert into Employee_Test_Audit
+    (Emp_ID,Emp_Name,Emp_Sal,Audit_Action,Audit_Timestamp)
+    values(@empid,@empname,@empsal,@audit_action,getdate());
+
+PRINT 'Triger İşlemi Tamamlandı.'
+GO
+
+-- dbo.trgEmployeeUpdate (Employee Tablosu - UPDATE Log)
+CREATE TRIGGER dbo.trgEmployeeUpdate
+ON dbo.Employee
+AFTER UPDATE
+AS
+    INSERT INTO dbo.EmpLog(EmpID, Operation, UpdatedDate)
+    SELECT EmployeeID,'UPDATE', GETDATE() FROM DELETED;
+GO
+
+-- dbo.trgEmployeeInsert (Employee Tablosu - INSERT Log)
+CREATE TRIGGER dbo.trgEmployeeInsert
+ON dbo.Employee
+FOR INSERT	
+AS
+    INSERT INTO dbo.EmpLog(EmpID, Operation, UpdatedDate)
+    SELECT EmployeeID ,'INSERT',GETDATE() FROM INSERTED; --virtual table INSERTED
+GO
+
+-- trgAnketSonuc (Kisi Tablosu - INSERT Log)
+CREATE TRIGGER trgAnketSonuc
+ON Kisi
+FOR INSERT	
+AS
+    INSERT INTO AnketLog(SicilId, GirisTarihi, AdSoyad)
+    SELECT RecId ,'INSERT',GETDATE() FROM INSERTED; 
+GO
+```
