@@ -1,1 +1,31 @@
-SQL Server Triggers and Transactions ExamplesBu belge, bir SQL Server betiği (trigger.sql) içinde yer alan Tetikleyiciler (Triggers) ve İşlemler (Transactions) kavramlarına ait pratik örneklerin detaylı bir özetini sunar.🇹🇷 Türkçe Açıklama📝 Proje BaşlığıSQL Server Tetikleyicileri ve İşlemleri (Triggers & Transactions) Örnekleri💡 GirişBu SQL dosyası, SQL Server veritabanı yönetim sisteminde kullanılan Tetikleyiciler (Triggers) ve İşlemler (Transactions) kavramlarını göstermektedir. Dosya, veritabanı olaylarına (INSERT, UPDATE, DELETE gibi DML işlemleri) otomatik olarak tepki veren özel saklı yordamlar olan tetikleyicilerin nasıl oluşturulacağını ve kullanılacağını gösteren çeşitli örnekler içermektedir. Ayrıca, veri bütünlüğünü sağlamak için kullanılan işlem bloklarına (BEGIN TRANSACTION, COMMIT, ROLLBACK TRANSACTION) dair uygulamalar da mevcuttur.🔑 Anahtar KavramlarKavram (Concept)Tanım (Definition)DML TetikleyicileriINSERT, UPDATE ve DELETE gibi Veri Manipülasyon Dili (DML) olaylarına yanıt veren tetikleyiciler.AFTER/FOR TetikleyicileriDML olayından sonra çalışan tetikleyicilerdir, genellikle denetim (logging) veya veri bütünlüğü işlemlerinde kullanılırlar.Sanal TablolarTetikleyicilerin içinde, işlemden etkilenen verileri geçici olarak tutan özel sanal tablolardır. INSERTED yeni, DELETED eski veriyi içerir.İşlemler (Transactions)Bir dizi SQL komutunu tek bir mantıksal çalışma birimi olarak yürüten bloklardır; ya hepsi başarılı olur (COMMIT) ya da hepsi başarısız olursa geri alınır (ROLLBACK).İşlem KontrolüBEGIN TRAN (başlatır), COMMIT TRAN (onaylar), ROLLBACK TRAN (geri alır), SAVE TRANSACTION (kayıt noktası oluşturur).🛠️ Dosya İçeriği ÖzetiDosya, aşağıdaki işlemleri gerçekleştiren SQL kod parçalarını içerir:Denetim (Audit) Tetikleyicileri: trgAnektSonuc, dbo.trgEmployeeUpdate, dbo.trgEmployeeInsert, trgAnketSonuc.Veri Girişi Örneği: Kisi tablosuna veri ekleme (INSERT).Karmaşık Tetikleyici Örneği: trgAnketSonucInsert (Hatalı kendi kendine INSERT girişimi içerir).Rastgele Veri Seçme: Kisi tablosundan rastgele bir kayıt seçme örneği (NEWID() kullanımı).İşlem (Transaction) Örnekleri:SAVE TRANSACTION ve ROLLBACK TRANSACTION kullanarak bir işlem içinde belirli bir noktaya geri dönme.Basit UPDATE işlemi ve @@TRANCOUNT ile işlem sayısını kontrol etme.Başlatılan bir işlemin ROLLBACK ile geri alınarak tablodaki değişimin iptal edilmesi.🇬🇧 English Explanation📝 Project TitleSQL Server Triggers and Transactions Examples💡 IntroductionThis SQL file demonstrates the concepts of Triggers and Transactions used within the SQL Server database management system. The file contains various examples illustrating how to create and use triggers—special stored procedures that automatically respond to database events (DML operations like INSERT, UPDATE, DELETE). It also includes applications of transaction blocks (BEGIN TRANSACTION, COMMIT, ROLLBACK TRANSACTION) used to ensure data integrity.🔑 Key ConceptsConceptDefinitionDML TriggersTriggers that respond to Data Manipulation Language (DML) events such as INSERT, UPDATE, and DELETE.AFTER/FOR TriggersTriggers that execute after the DML event, commonly used for auditing (logging) or data integrity processes.Virtual TablesSpecial virtual tables that temporarily hold the data affected by the operation inside the triggers. INSERTED contains new rows, and DELETED contains old rows.TransactionsBlocks that execute a series of SQL commands as a single logical unit of work; either all succeed (COMMIT) or all are reverted if any fail (ROLLBACK).Transaction ControlBEGIN TRAN (starts), COMMIT TRAN (terminates successfully), ROLLBACK TRAN (reverts), SAVE TRANSACTION (creates a savepoint).🛠️ File Content SummaryThe file contains SQL code snippets that perform the following operations:Auditing Triggers: trgAnektSonuc, dbo.trgEmployeeUpdate, dbo.trgEmployeeInsert, trgAnketSonuc.Data Insertion Example: Inserting data into the Kisi table (INSERT).Complex Trigger Example: trgAnketSonucInsert (Contains complex logic and an erroneous self-INSERT attempt).Random Data Selection: Example of selecting a random record from the Kisi table (using NEWID()).Transaction Examples:Using SAVE TRANSACTION and ROLLBACK TRANSACTION to revert to a specific point within a transaction.Simple UPDATE operation and checking the transaction count with @@TRANCOUNT.Canceling a change in a table by rolling back a started transaction.
+-- SAVE TRANSACTION / ROLLBACK TRANSACTION Örneği (Savepoint Example)
+BEGIN TRANSACTION 
+INSERT INTO Person 
+VALUES('Mouse', 'Micky','500 South Buena Vista Street, Burbank','California',43)
+SAVE TRANSACTION InsertStatement -- Kayıt Noktası oluşturur
+DELETE Person WHERE PersonID=3
+SELECT * FROM Person 
+ROLLBACK TRANSACTION InsertStatement -- Bu noktaya geri döner, DELETE işlemi iptal olur
+COMMIT -- Kalan INSERT işlemini onaylar
+SELECT * FROM Person
+-------------------------------
+
+-- COMMIT ve @@TRANCOUNT Örneği (COMMIT and @@TRANCOUNT Example)
+Begin Tran
+Update Customers
+Set CompanyName = 'Batuhan',
+ContactName ='Ozler'
+Where CustomerID = '1'
+Select @@TRANCOUNT As OpenTransactions -- Açık işlem sayısını gösterir (1)
+Commit Tran
+Select @@TRANCOUNT As OpenTransactions -- İşlem kapatıldı (0)
+
+-- ROLLBACK Örneği (ROLLBACK Example)
+Begin Tran
+Update Customers
+Set CompanyName = 'Batuhan',
+ContactName = 'Ozler'
+Where CustomerID = '3'
+Select * From Customers Where CustomerID = 3 -- Değişmiş veriyi gösterir
+Rollback Tran -- Değişikliği geri alır
+Select * From Customers Where CustomerID = 3 -- Eski veriyi gösterir
