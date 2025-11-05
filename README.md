@@ -1,99 +1,71 @@
-🇹🇷 Türkçe Anlatım
-📝 Proje Başlığı: SQL Server Tetikleyicileri ve İşlemleri (Triggers & Transactions) Örnekleri
-Bu SQL dosyası (trigger.sql), SQL Server veritabanı yönetim sisteminde kullanılan Tetikleyiciler (Triggers) ve İşlemler (Transactions) kavramlarını göstermektedir. Dosya, veritabanı olaylarına (INSERT, UPDATE, DELETE gibi DML işlemleri) otomatik olarak tepki veren özel saklı yordamlar olan tetikleyicilerin nasıl oluşturulacağını ve kullanılacağını gösteren çeşitli örnekler içermektedir. Ayrıca, veri bütünlüğünü sağlamak için kullanılan işlem bloklarına (BEGIN TRANSACTION, COMMIT, ROLLBACK TRANSACTION) dair uygulamalar da mevcuttur.
+# 💾 SQL Server Tetikleyicileri ve İşlemleri (Triggers & Transactions) Örnekleri
 
-🔑 Anahtar Kavramlar
-DML Tetikleyicileri (DML Triggers): INSERT, UPDATE ve DELETE gibi Veri Manipülasyon Dili (DML) olaylarına yanıt veren tetikleyiciler.
+Bu depo, **SQL Server** veritabanı yönetim sisteminde kullanılan **Tetikleyiciler (Triggers)** ve **İşlemler (Transactions)** kavramlarını uygulamalı olarak gösteren `trigger.sql` dosyasını içermektedir.
 
-AFTER/FOR Tetikleyicileri: DML olayından sonra çalışan tetikleyicilerdir, genellikle denetim (logging) veya veri bütünlüğü işlemlerinde kullanılırlar.
+Bu örnekler, veri bütünlüğünü sağlamak, denetim (auditing) kayıtları tutmak ve veritabanı olaylarına otomatik olarak tepki vermek için bu güçlü araçların nasıl kullanılacağını anlamanıza yardımcı olmayı amaçlar.
 
-Sanal Tablolar (INSERTED ve DELETED): Tetikleyicilerin içinde, işlemden etkilenen verileri geçici olarak tutan özel sanal tablolardır.
+## 🇹🇷 Türkçe Anlatım
 
-INSERT tetikleyicilerinde INSERTED tablosu yeni eklenen satırları içerir.
+### 📝 Proje Başlığı
+SQL Server Tetikleyicileri ve İşlemleri (Triggers & Transactions) Örnekleri
 
-UPDATE tetikleyicilerinde INSERTED yeni, DELETED eski satırları içerir.
+### Proje Amacı
+Bu SQL dosyası (`trigger.sql`), SQL Server'da DML (Veri Manipülasyon Dili) olaylarına otomatik yanıt veren **Tetikleyicilerin** oluşturulmasını ve kullanılmasını gösteren çeşitli örnekler sunar. Ayrıca, bir dizi SQL komutunu tek bir mantıksal çalışma birimi olarak yürüten ve veri bütünlüğünü sağlayan **İşlem (Transaction)** bloklarına dair uygulamalar da mevcuttur.
 
-İşlemler (Transactions): Bir dizi SQL komutunu tek bir mantıksal çalışma birimi olarak yürüten bloklardır; ya hepsi başarılı olur (COMMIT) ya da hepsi başarısız olursa geri alınır (ROLLBACK).
+### 🔑 Anahtar Kavramlar
 
-BEGIN TRAN / COMMIT TRAN: İşlemi başlatır ve sonlandırır.
+* **DML Tetikleyicileri (DML Triggers):** `INSERT`, `UPDATE` ve `DELETE` gibi DML olaylarına yanıt veren, veritabanı tarafında çalışan özel saklı yordamlardır.
+* **AFTER/FOR Tetikleyicileri:** DML olayı tamamlandıktan **sonra** çalışan tetikleyicilerdir. Genellikle denetim (logging) veya karmaşık veri bütünlüğü işlemlerinde kullanılırlar.
+* **Sanal Tablolar (`INSERTED` ve `DELETED`):** Tetikleyicilerin içinde, işlemden etkilenen verileri geçici olarak tutan özel sanal tablolardır:
+    * **`INSERTED`:** Yeni eklenen veya güncellenen satırların (yeni değerler) kopyasını içerir.
+    * **`DELETED`:** Silinen veya güncellenen satırların (eski değerler) kopyasını içerir.
+* **İşlemler (Transactions):** Bir dizi SQL komutunun atomik (bölünmez) bir şekilde yürütülmesini sağlayan bloklardır.
+    * `BEGIN TRAN / COMMIT TRAN`: İşlemi başlatır ve sonlandırır (başarıyla kaydeder).
+    * `ROLLBACK TRAN`: İşlemi geri alır ve veritabanını işlemin başlangıç durumuna döndürür.
+    * `SAVE TRANSACTION`: İşlem içinde geri alma noktası (Savepoint) oluşturur.
 
-ROLLBACK TRAN: İşlemi veya bir işlem içindeki kayıt noktasını (Savepoint) geri alır.
+### 🛠️ Dosya İçeriği Özeti
 
-SAVE TRANSACTION: İşlem içinde geri alma noktası (Savepoint) oluşturur.
+`trigger.sql` dosyası, aşağıdaki temel işlevleri gösteren SQL kod parçalarını içerir:
 
-🛠️ Dosya İçeriği Özeti
-Dosya, aşağıdaki işlemleri gerçekleştiren SQL kod parçalarını içerir:
+| İşlev Türü | Örnek Tetikleyiciler / İşlemler | Açıklama |
+| :--- | :--- | :--- |
+| **Denetim (Audit) Tetikleyicileri** | `dbo.trgEmployeeUpdate`, `dbo.trgEmployeeInsert`, `trgAnketSonuc` | `Employee` ve `Kisi` gibi tablolardaki DML olaylarından sonra `EmpLog` ve `AnketLog` tablolarına kayıt ekleyerek değişiklikleri izler. |
+| **Veri Girişi Örneği** | `INSERT INTO Kisi...` | `Kisi` tablosuna standart veri ekleme işlemi. |
+| **Karmaşık Tetikleyici Örneği** | `trgAnketSonucInsert` | `Kisi` tablosu için `AFTER INSERT` tetikleyicisi, karmaşık mantık ve **kendini tetikleme** (self-INSERT) risklerine dair bir örneği gösterir. |
+| **Rastgele Veri Seçme** | `ORDER BY NEWID()` | `Kisi` tablosundan rastgele bir kayıt seçme yöntemi. |
+| **İşlem (Transaction) Örnekleri** | `SAVE TRANSACTION`, `ROLLBACK TRANSACTION`, `@@TRANCOUNT` | İşlem içinde belirli bir noktaya geri dönme, işlem sayısını kontrol etme ve başlatılan bir işlemi geri alma uygulamaları. |
 
-Denetim (Audit) Tetikleyicileri:
+---
 
-trgAnektSonuc (Muhtemelen Secim tablosu için INSERT sonrası denetim amaçlı).
+## 🇬🇧 English Explanation
 
-dbo.trgEmployeeUpdate ( Employee tablosu için UPDATE sonrası EmpLog tablosuna kayıt ekleme).
+### 📝 Project Title
+SQL Server Triggers and Transactions Examples
 
-dbo.trgEmployeeInsert ( Employee tablosu için INSERT sonrası EmpLog tablosuna kayıt ekleme).
+### Project Goal
+This SQL file (`trigger.sql`) provides various examples illustrating how to create and use **Triggers** in SQL Server that automatically respond to DML (Data Manipulation Language) events. It also includes applications of **Transaction** blocks, which execute a series of SQL commands as a single logical unit of work and ensure data integrity.
 
-trgAnketSonuc ( Kisi tablosu için INSERT sonrası AnketLog tablosuna kayıt ekleme).
+### 🔑 Key Concepts
 
-Veri Girişi Örneği: Kisi tablosuna veri ekleme (INSERT).
+* **DML Triggers:** Special stored procedures that execute on the database side in response to DML events like `INSERT`, `UPDATE`, and `DELETE`.
+* **AFTER/FOR Triggers:** Triggers that execute **after** the DML event is completed. They are commonly used for auditing (logging) or enforcing complex data integrity rules.
+* **Virtual Tables (`INSERTED` and `DELETED`):** Special virtual tables that temporarily hold the data affected by the operation inside the triggers:
+    * **`INSERTED`:** Contains a copy of the newly added or updated rows (new values).
+    * **`DELETED`:** Contains a copy of the deleted or updated rows (old values).
+* **Transactions:** Blocks that ensure a series of SQL commands are executed atomically (as one indivisible unit).
+    * `BEGIN TRAN / COMMIT TRAN`: Starts and terminates the transaction (successfully saves the changes).
+    * `ROLLBACK TRAN`: Reverts the transaction, returning the database to the state before the transaction began.
+    * `SAVE TRANSACTION`: Creates a savepoint within the transaction for partial rollback.
 
-Karmaşık Tetikleyici Örneği: trgAnketSonucInsert ( Kisi tablosu için AFTER INSERT tetikleyicisi, karmaşık mantık ve hatalı kendi kendine INSERT girişimi içeriyor).
+### 🛠️ File Content Summary
 
-Rastgele Veri Seçme: Kisi tablosundan rastgele bir kayıt seçme örneği (NEWID() kullanımı).
+The `trigger.sql` file contains SQL snippets demonstrating the following core functionalities:
 
-İşlem (Transaction) Örnekleri:
-
-SAVE TRANSACTION ve ROLLBACK TRANSACTION kullanarak bir işlem içinde belirli bir noktaya geri dönme.
-
-Basit UPDATE işlemi ve @@TRANCOUNT ile işlem sayısını kontrol etme.
-
-Başlatılan bir işlemin ROLLBACK ile geri alınarak tablodaki değişimin iptal edilmesi.
-
-🇬🇧 English Explanation
-📝 Project Title: SQL Server Triggers and Transactions Examples
-This SQL file (trigger.sql) demonstrates the concepts of Triggers and Transactions used within the SQL Server database management system. The file contains various examples illustrating how to create and use triggers—special stored procedures that automatically respond to database events (DML operations like INSERT, UPDATE, DELETE). It also includes applications of transaction blocks (BEGIN TRANSACTION, COMMIT, ROLLBACK TRANSACTION) used to ensure data integrity.
-
-🔑 Key Concepts
-DML Triggers: Triggers that respond to Data Manipulation Language (DML) events such as INSERT, UPDATE, and DELETE.
-
-AFTER/FOR Triggers: Triggers that execute after the DML event, commonly used for auditing (logging) or data integrity processes.
-
-Virtual Tables (INSERTED and DELETED): Special virtual tables that temporarily hold the data affected by the operation inside the triggers.
-
-In INSERT triggers, the INSERTED table contains the newly added rows.
-
-In UPDATE triggers, INSERTED contains the new rows, and DELETED contains the old rows.
-
-Transactions: Blocks that execute a series of SQL commands as a single logical unit of work; either all succeed (COMMIT) or all are reverted if any fail (ROLLBACK).
-
-BEGIN TRAN / COMMIT TRAN: Starts and terminates the transaction.
-
-ROLLBACK TRAN: Reverts the transaction or a savepoint within a transaction.
-
-SAVE TRANSACTION: Creates a savepoint within the transaction for partial rollback.
-
-🛠️ File Content Summary
-The file contains SQL code snippets that perform the following operations:
-
-Auditing Triggers:
-
-trgAnektSonuc (Likely for auditing purposes after an INSERT on the Secim table).
-
-dbo.trgEmployeeUpdate (Inserts a record into the EmpLog table after an UPDATE on the Employee table).
-
-dbo.trgEmployeeInsert (Inserts a record into the EmpLog table after an INSERT on the Employee table).
-
-trgAnketSonuc (Inserts a record into the AnketLog table after an INSERT on the Kisi table).
-
-Data Insertion Example: Inserting data into the Kisi table (INSERT).
-
-Complex Trigger Example: trgAnketSonucInsert (AFTER INSERT trigger for Kisi table, containing complex logic and an erroneous self-INSERT attempt).
-
-Random Data Selection: Example of selecting a random record from the Kisi table (using NEWID()).
-
-Transaction Examples:
-
-Using SAVE TRANSACTION and ROLLBACK TRANSACTION to revert to a specific point within a transaction.
-
-Simple UPDATE operation and checking the transaction count with @@TRANCOUNT.
-
-Canceling a change in a table by rolling back a started transaction.
+| Function Type | Example Triggers / Transactions | Description |
+| :--- | :--- | :--- |
+| **Auditing Triggers** | `dbo.trgEmployeeUpdate`, `dbo.trgEmployeeInsert`, `trgAnketSonuc` | Tracks changes by inserting records into `EmpLog` and `AnketLog` tables after DML events on tables like `Employee` and `Kisi`. |
+| **Data Insertion Example** | `INSERT INTO Kisi...` | Standard data insertion into the `Kisi` table. |
+| **Complex Trigger Example** | `trgAnketSonucInsert` | An `AFTER INSERT` trigger for the `Kisi` table, showing complex logic and an example of the risks associated with **self-triggering** (recursive INSERT). |
+| **Random Data Selection** | `ORDER BY NEWID()` | A method for selecting a random record from the `Kisi` table. |
+| **Transaction Examples** | `SAVE TRANSACTION`, `ROLLBACK TRANSACTION`, `@@TRANCOUNT` | Applications of reverting to a specific point within a transaction, checking the transaction count, and canceling a started transaction's changes. |
