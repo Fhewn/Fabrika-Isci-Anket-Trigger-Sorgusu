@@ -1,0 +1,1 @@
+# Fabrika--i-Anket-Trigger-Sorgusu
