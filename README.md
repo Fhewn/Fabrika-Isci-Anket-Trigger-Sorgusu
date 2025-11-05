@@ -1,4 +1,4 @@
-```
+
 🇹🇷 Türkçe Anlatım
 📝 Proje Başlığı: SQL Server Tetikleyicileri ve İşlemleri (Triggers & Transactions) Örnekleri
 Bu SQL dosyası (trigger.sql), SQL Server veritabanı yönetim sisteminde kullanılan Tetikleyiciler (Triggers) ve İşlemler (Transactions) kavramlarını göstermektedir. Dosya, veritabanı olaylarına (INSERT, UPDATE, DELETE gibi DML işlemleri) otomatik olarak tepki veren özel saklı yordamlar olan tetikleyicilerin nasıl oluşturulacağını ve kullanılacağını gösteren çeşitli örnekler içermektedir. Ayrıca, veri bütünlüğünü sağlamak için kullanılan işlem bloklarına (BEGIN TRANSACTION, COMMIT, ROLLBACK TRANSACTION) dair uygulamalar da mevcuttur.
@@ -48,7 +48,7 @@ SAVE TRANSACTION ve ROLLBACK TRANSACTION kullanarak bir işlem içinde belirli b
 Basit UPDATE işlemi ve @@TRANCOUNT ile işlem sayısını kontrol etme.
 
 Başlatılan bir işlemin ROLLBACK ile geri alınarak tablodaki değişimin iptal edilmesi.
-```
+
 🇬🇧 English Explanation
 📝 Project Title: SQL Server Triggers and Transactions Examples
 This SQL file (trigger.sql) demonstrates the concepts of Triggers and Transactions used within the SQL Server database management system. The file contains various examples illustrating how to create and use triggers—special stored procedures that automatically respond to database events (DML operations like INSERT, UPDATE, DELETE). It also includes applications of transaction blocks (BEGIN TRANSACTION, COMMIT, ROLLBACK TRANSACTION) used to ensure data integrity.
