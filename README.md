@@ -48,7 +48,7 @@ SAVE TRANSACTION ve ROLLBACK TRANSACTION kullanarak bir işlem içinde belirli b
 Basit UPDATE işlemi ve @@TRANCOUNT ile işlem sayısını kontrol etme.
 
 Başlatılan bir işlemin ROLLBACK ile geri alınarak tablodaki değişimin iptal edilmesi.
-
+```
 🇬🇧 English Explanation
 📝 Project Title: SQL Server Triggers and Transactions Examples
 This SQL file (trigger.sql) demonstrates the concepts of Triggers and Transactions used within the SQL Server database management system. The file contains various examples illustrating how to create and use triggers—special stored procedures that automatically respond to database events (DML operations like INSERT, UPDATE, DELETE). It also includes applications of transaction blocks (BEGIN TRANSACTION, COMMIT, ROLLBACK TRANSACTION) used to ensure data integrity.
@@ -98,4 +98,4 @@ Using SAVE TRANSACTION and ROLLBACK TRANSACTION to revert to a specific point wi
 Simple UPDATE operation and checking the transaction count with @@TRANCOUNT.
 
 Canceling a change in a table by rolling back a started transaction.
-```
+
